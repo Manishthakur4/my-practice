@@ -9,7 +9,7 @@ function handleFormSubmit(event) {
         category: event.target.category.value,
     };
 
-    axios.post('https://crudcrud.com/api/43d123b3089948fb834aad7aeec1a140/appointment', userDetails)
+    axios.post('https://crudcrud.com/api/dd517b9f346d4b2c9ece7853053cca57/appointment', userDetails)
         .then((response) => {
             console.log("Success! Expense added.");
             displayUserOnScreen(response.data);
@@ -44,19 +44,51 @@ function displayUserOnScreen(userDetails) {
     userList.appendChild(userItem);
 
     deleteBtn.addEventListener("click", function (event) {
-        userList.removeChild(event.target.parentElement);
+        const userId = userDetails._id; // Assuming '_id' is the identifier from CRUD CRUD
+        deleteExpense(userId, userItem);
     });
 
     editBtn.addEventListener("click", function (event) {
         userList.removeChild(event.target.parentElement);
+        const userId = userDetails._id; // Assuming '_id' is the identifier from CRUD CRUD
+        updateExpense(userId);
     });
+
+
 }
 
 function loadExistingUsers() {
-    axios.get('https://crudcrud.com/api/43d123b3089948fb834aad7aeec1a140/appointment')
+    axios.get('https://crudcrud.com/api/dd517b9f346d4b2c9ece7853053cca57/appointment')
         .then((response) => {
             const existingUsers = response.data;
             existingUsers.forEach(displayUserOnScreen);
+        })
+        .catch((err) => {
+            console.error(err);
+        });
+}
+function deleteExpense(userId, userItem) {
+    axios.delete(`https://crudcrud.com/api/dd517b9f346d4b2c9ece7853053cca57/appointment/${userId}`)
+        .then(() => {
+            console.log("Success! Expense deleted.");
+            userItem.remove(); 
+        })
+        .catch((err) => {
+            console.error(err);
+        });
+}
+
+
+
+function updateExpense(userId) {
+    axios.get(`https://crudcrud.com/api/dd517b9f346d4b2c9ece7853053cca57/appointment/${userId}`)
+        .then((response) => {
+            const existingUsers = response.data;
+            document.getElementById("expenseamount").value = existingUsers.expenseamount;
+            document.getElementById("description").value = existingUsers.description;
+            document.getElementById("category").value = existingUsers.category;
+            console.log("Success! Expense updated.");
+            // Implement logic to update the UI with the edited details
         })
         .catch((err) => {
             console.error(err);
